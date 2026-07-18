@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AdShield</string>
+    <string name="accessibility_service_description">AdShield monitors on-screen windows to detect apps that repeatedly show pop-up / overlay ads outside their own app — including on your home screen — and helps you find and remove them. It does not read personal content, does not use the internet, and all data stays on this device.</string>
+</resources>

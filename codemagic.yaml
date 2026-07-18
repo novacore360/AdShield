@@ -1,0 +1,37 @@
+workflows:
+  android-release:
+    name: AdShield Android Release
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      groups:
+        - keystore_credentials   # define in Codemagic UI: CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS, CM_KEY_PASSWORD
+      vars:
+        PACKAGE_NAME: "com.adshield.detector"
+      android_signing:
+        - adshield_keystore      # reference to the keystore you upload in Codemagic
+      java: 17
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+      - name: Generate Gradle wrapper
+        script: |
+          gradle wrapper --gradle-version 8.7
+      - name: Build release AAB
+        script: |
+          ./gradlew clean bundleRelease
+      - name: Build release APK
+        script: |
+          ./gradlew assembleRelease
+    artifacts:
+      - app/build/outputs/**/*.aab
+      - app/build/outputs/**/*.apk
+      - app/build/outputs/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
+        notify:
+          success: true
+          failure: true
