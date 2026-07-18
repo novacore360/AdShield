@@ -32,6 +32,7 @@ private val KNOWN_SAFE_PREFIXES = listOf(
 
 object OverlayPermissionScanner {
 
+    @Suppress("DEPRECATION") // unsafeCheckOpNoThrow requires API 29+; app supports minSdk 26
     fun getAppsWithOverlayPermission(context: Context): List<SuspectAppInfo> {
         val pm = context.packageManager
         val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
