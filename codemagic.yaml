@@ -31,7 +31,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - your-email@example.com
+          - synchaeds@gmail.com
         notify:
           success: true
           failure: true
