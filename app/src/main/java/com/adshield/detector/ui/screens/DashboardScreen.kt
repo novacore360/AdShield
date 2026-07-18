@@ -29,6 +29,7 @@ import com.adshield.detector.ui.theme.SurfaceDarkAlt
 import com.adshield.detector.util.AccessibilityStatus
 import com.adshield.detector.util.AppInfoHelper
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     viewModel: AdShieldViewModel,
