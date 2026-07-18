@@ -70,8 +70,10 @@ class AdDetectorAccessibilityService : AccessibilityService() {
         val pkg = root.packageName?.toString() ?: return
         if (pkg == packageName) return // never act on ourselves
 
-        val isOverlayType = window.type == AccessibilityWindowInfo.TYPE_APPLICATION_OVERLAY ||
-            window.type == AccessibilityWindowInfo.TYPE_SYSTEM
+        // AccessibilityWindowInfo has no distinct "overlay" type — a SYSTEM_ALERT_WINDOW
+        // overlay from another app (not tied to any activity/task) surfaces as
+        // TYPE_SYSTEM here, which is what we treat as the "floating overlay" signal.
+        val isOverlayType = window.type == AccessibilityWindowInfo.TYPE_SYSTEM
 
         val now = System.currentTimeMillis()
         val timestamps = recentWindowTimestamps.getOrPut(pkg) { mutableListOf() }
@@ -109,7 +111,7 @@ class AdDetectorAccessibilityService : AccessibilityService() {
         var score = 0
 
         if (isOverlayType) score += 3
-        if (window.type == AccessibilityWindowInfo.TYPE_APPLICATION_OVERLAY && !window.isFocused) score += 1
+        if (isOverlayType && !window.isFocused) score += 1
         if (!hasVisibleCloseAffordance(root)) score += 2
         if (containsKnownAdSignature(root)) score += 4
         if (isFullScreenNoNav(root)) score += 1
@@ -183,9 +185,9 @@ class AdDetectorAccessibilityService : AccessibilityService() {
 
     private fun windowTypeName(type: Int): String = when (type) {
         AccessibilityWindowInfo.TYPE_APPLICATION -> "APPLICATION"
-        AccessibilityWindowInfo.TYPE_APPLICATION_OVERLAY -> "APPLICATION_OVERLAY"
-        AccessibilityWindowInfo.TYPE_SYSTEM -> "SYSTEM"
+        AccessibilityWindowInfo.TYPE_SYSTEM -> "SYSTEM (likely overlay)"
         AccessibilityWindowInfo.TYPE_INPUT_METHOD -> "INPUT_METHOD"
+        AccessibilityWindowInfo.TYPE_ACCESSIBILITY_OVERLAY -> "ACCESSIBILITY_OVERLAY"
         else -> "OTHER"
     }
 
